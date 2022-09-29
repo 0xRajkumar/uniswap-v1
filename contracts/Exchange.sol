@@ -1,37 +1,20 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
 import 'hardhat/console.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-
-interface IFactory {
-    function getExchange(address _token) external view returns (address);
-}
-
-interface IExchange {
-    function ethToTokenSwap(uint256 _minTokens) external payable;
-
-    function ethToTokenTransfer(uint256 _minTokens, address _recipient)
-        external
-        payable;
-
-    function getEthExchangeRate(uint256 _ethSold)
-        external
-        view
-        returns (uint256);
-}
+import './interfaces/IFactory.sol';
+import './interfaces/IExchange.sol';
 
 contract Exchange is ERC20 {
     address tokenAddress;
     address factoryAddress;
 
-    constructor(address _tokenAddress, address _factoryAddress)
-        ERC20('Uniswap-V1', 'UNI-V1')
-    {
+    constructor(address _tokenAddress) ERC20('Uniswap', 'UNI') {
         require(_tokenAddress != address(0), 'invalid token address');
         tokenAddress = _tokenAddress;
-        factoryAddress = _factoryAddress;
+        factoryAddress = msg.sender;
     }
 
     function addLiquidity(uint256 _tokenAmount) public payable {
@@ -159,7 +142,7 @@ contract Exchange is ERC20 {
         uint256 _tokensSold,
         uint256 _minTokenBought,
         address _tokenAddress
-    ) private {
+    ) public {
         address exchangeAddress = IFactory(factoryAddress).getExchange(
             _tokenAddress
         );
@@ -169,6 +152,7 @@ contract Exchange is ERC20 {
             getTokenReserve(),
             getEthReserve()
         );
+
         IERC20(tokenAddress).transferFrom(
             msg.sender,
             address(this),
