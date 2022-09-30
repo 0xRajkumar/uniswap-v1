@@ -33,11 +33,11 @@ async function createExchangeUsingFactory(
     return Exchange.attach(exchangeAddress);
 }
 
-describe('Greeter', function () {
-    let owner: SignerWithAddress;
-    let user: SignerWithAddress;
+describe('Exchange', function () {
     let exchange: Exchange;
     let daiToken: Token;
+    let owner: SignerWithAddress;
+    let user: SignerWithAddress;
 
     beforeEach(async () => {
         [owner, user] = await ethers.getSigners();
