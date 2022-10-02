@@ -35,7 +35,7 @@ contract Exchange is ERC20 {
             uint256 tokenAmount = (getTokenReserve() * _ethAmount) /
                 (getEthReserve() - msg.value);
             require(_tokenAmount >= tokenAmount, 'insufficient token amount');
-            uint256 liquidity = msg.value;
+            uint256 liquidity = (msg.value * totalSupply()) / getEthReserve() - msg.value;
             _mint(msg.sender, liquidity);
             IERC20(tokenAddress).transferFrom(
                 msg.sender,
